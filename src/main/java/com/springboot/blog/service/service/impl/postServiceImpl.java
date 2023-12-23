@@ -40,6 +40,10 @@ public class postServiceImpl implements PostService {
         return postResponse;
     }
 
+    private PostEntity findById(Long id){
+        return this.postRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("post","id",id));
+    }
+
     @Override
     public List<PostDto> getAllPost(){
         List<PostEntity> post =  this.postRepository.findAll();
@@ -49,8 +53,25 @@ public class postServiceImpl implements PostService {
 
     @Override
     public PostDto getPostById(Long id){
-        PostEntity post = this.postRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("post","id",id));
+        PostEntity post = this.findById(id);
         return mapEntityToDto(post);
     }
 
+    @Override
+    public PostDto updatePost(Long id,PostDto post){
+        PostEntity postEntity = this.findById(id);
+        postEntity.setTitle(post.getTitle());
+        postEntity.setContent(post.getContent());
+        postEntity.setDescription(post.getDescription());
+        this.postRepository.save(postEntity);
+        return this.mapEntityToDto(postEntity);
+    }
+
+    @Override
+    public Long deletePost(Long id){
+        PostEntity postEntity = this.findById(id);
+        Long postId = postEntity.getId();
+        this.postRepository.delete(postEntity);
+        return postId;
+    }
 }
