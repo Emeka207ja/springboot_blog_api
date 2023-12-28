@@ -7,6 +7,7 @@ import com.springboot.blog.exception.ResourceNotFoundException;
 import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.service.CommentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,25 +17,18 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    public CommentServiceImpl(CommentRepository commentRepository,PostRepository postRepository){
+    private final ModelMapper commentMapper;
+    public CommentServiceImpl(CommentRepository commentRepository,PostRepository postRepository,ModelMapper commentMapper){
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
+        this.commentMapper = commentMapper;
     }
 
     private  CommentDto mapEntityToDto(CommentEntity comment){
-         CommentDto commentResponse = new CommentDto();
-         commentResponse.setId(comment.getId());
-         commentResponse.setName(comment.getName());
-         commentResponse.setEmail(comment.getEmail());
-         commentResponse.setBody(comment.getBody());
-        return commentResponse;
+        return commentMapper.map(comment,CommentDto.class);
     }
     private CommentEntity mapDtoToEntity(CommentDto comment){
-        CommentEntity commentEntity = new CommentEntity();
-        commentEntity.setBody(comment.getBody());
-        commentEntity.setName(comment.getName());
-        commentEntity.setEmail(comment.getEmail());
-        return commentEntity;
+        return commentMapper.map(comment,CommentEntity.class);
     }
     private CommentEntity findCommentById(Long comment_id){
         return this.commentRepository.findById(comment_id).orElseThrow(()->new ResourceNotFoundException("comment","id",comment_id));
