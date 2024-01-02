@@ -2,16 +2,16 @@ package com.springboot.blog.controller;
 
 
 import com.springboot.blog.dto.LoginDto;
+import com.springboot.blog.dto.LoginResponseDto;
 import com.springboot.blog.dto.UserDto;
+import com.springboot.blog.dto.signupResponseDto;
 import com.springboot.blog.entity.RolesEntity;
 import com.springboot.blog.entity.UserEntity;
 import com.springboot.blog.exception.ResourceExistException;
 import com.springboot.blog.repository.RoleRepository;
 import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.security.JwtTokenProvider;
-import com.springboot.blog.service.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> RegisterUser(@Valid @RequestBody()UserDto userDto){
+    public ResponseEntity<signupResponseDto> RegisterUser(@Valid @RequestBody()UserDto userDto){
         if(this.userRepository.existsByUsername((userDto.getUsername()))){
             throw new ResourceExistException("username already taken");
         }
@@ -64,16 +64,19 @@ public class UserController {
         RolesEntity role = this.roleRepository.findByName("USER").get();
         user.setRoles(Collections.singleton(role));
         userRepository.save(user);
-        return new ResponseEntity<>("user registered successfully", HttpStatus.CREATED);
+        signupResponseDto response = new signupResponseDto();
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginDto loginDto){
+    public ResponseEntity<LoginResponseDto> loginUser(@Valid @RequestBody LoginDto loginDto){
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(),loginDto.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        LoginResponseDto response = new LoginResponseDto();
         String  token = jwtTokenProvider.generateToken(authentication);
-        return new ResponseEntity<>(token,HttpStatus.OK);
+        response.setToken(token);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }
