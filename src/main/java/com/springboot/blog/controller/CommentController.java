@@ -5,6 +5,7 @@ import com.springboot.blog.service.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public class CommentController {
             @PathVariable(name = "comment_id") Long comment_id,
             @Valid @RequestBody() CommentDto comment
     ){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(name);
         return new ResponseEntity<>(this.commentService.updateCommentById(post_id,comment_id,comment),HttpStatus.CREATED);
     }
     @DeleteMapping("/{post_id}/comment/{comment_id}")
@@ -46,6 +49,8 @@ public class CommentController {
             @PathVariable(name = "post_id") Long post_id,
             @PathVariable(name = "comment_id") Long comment_id
     ){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(name);
         return ResponseEntity.ok(this.commentService.deleteCommentById(post_id,comment_id));
     }
 }
