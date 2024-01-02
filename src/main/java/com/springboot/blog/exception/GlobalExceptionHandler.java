@@ -24,12 +24,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ResourceExistException.class)
+    ResponseEntity<ErrorDetails> handleResourceExistException(ResourceExistException exception,WebRequest webRequest){
+        ErrorDetails errorDetails = new ErrorDetails(new Date().toString(),exception.getMessage(),webRequest.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
     //handle every other exception
     @ExceptionHandler(Exception.class)
     ResponseEntity<ErrorDetails> handleGeneralException(Exception exception, WebRequest webRequest){
         ErrorDetails errorDetails = new ErrorDetails(new Date().toString(), exception.getMessage(),webRequest.getDescription(false));
         return new ResponseEntity<>(errorDetails,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
