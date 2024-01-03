@@ -1,6 +1,6 @@
 package com.springboot.blog.security;
 
-import com.springboot.blog.service.service.impl.UserServiceImpl;
+import com.springboot.blog.service.service.impl.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig {
     @Autowired
-    private final UserServiceImpl  userServiceImpl;
+    private final AuthService userServiceImpl;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 

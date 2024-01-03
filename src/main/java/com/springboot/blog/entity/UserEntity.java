@@ -33,6 +33,10 @@ public class UserEntity {
     private String username;
     private String email;
     private String password;
+    private String firstname;
+    private String lastname;
+    private String image;
+    private int age;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
