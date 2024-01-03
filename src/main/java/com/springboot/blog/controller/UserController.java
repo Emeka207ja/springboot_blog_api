@@ -4,6 +4,7 @@ import com.springboot.blog.dto.GetProfileDtoResponse;
 import com.springboot.blog.dto.UpdateProfileDto;
 import com.springboot.blog.dto.UpdateProfileResponseDto;
 import com.springboot.blog.dto.UpgradeToAdminResponseDto;
+import com.springboot.blog.service.service.UserService;
 import com.springboot.blog.service.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/user")
 public class UserController {
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @PutMapping("/profile")
     public ResponseEntity<UpdateProfileResponseDto> updateProfile(@RequestBody()UpdateProfileDto updateProfileDto){
