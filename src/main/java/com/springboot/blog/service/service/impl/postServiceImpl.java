@@ -2,6 +2,7 @@ package com.springboot.blog.service.service.impl;
 
 import com.springboot.blog.dto.PostDto;
 import com.springboot.blog.dto.PostResponseDto;
+import com.springboot.blog.dto.WelcomeMessageDto;
 import com.springboot.blog.entity.PostEntity;
 import com.springboot.blog.exception.ResourceNotFoundException;
 import com.springboot.blog.repository.PostRepository;
@@ -12,8 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,12 +20,15 @@ import java.util.stream.Collectors;
 public class postServiceImpl implements PostService {
     private PostRepository postRepository;
     private ModelMapper mapper;
+    private EmailServiceImpl emailSenderService;
     public postServiceImpl(
             PostRepository postRepository,
-            ModelMapper mapper
+            ModelMapper mapper,
+            EmailServiceImpl emailSenderService
     ){
         this.postRepository = postRepository;
         this.mapper = mapper;
+        this.emailSenderService = emailSenderService;
     }
     @Override
     public PostDto createPost(PostDto post) {
@@ -71,6 +73,8 @@ public class postServiceImpl implements PostService {
     @Override
     public PostDto getPostById(Long id){
         PostEntity post = this.findById(id);
+        WelcomeMessageDto welcomeMessageDto = new WelcomeMessageDto();
+        welcomeMessageDto.setName("bright");
         return mapEntityToDto(post);
     }
 

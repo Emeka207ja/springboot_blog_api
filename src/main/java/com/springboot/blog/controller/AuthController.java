@@ -1,19 +1,19 @@
 package com.springboot.blog.controller;
 
 
-import com.springboot.blog.dto.LoginDto;
-import com.springboot.blog.dto.LoginResponseDto;
-import com.springboot.blog.dto.UserDto;
-import com.springboot.blog.dto.signupResponseDto;
+import com.springboot.blog.dto.*;
 import com.springboot.blog.entity.RolesEntity;
 import com.springboot.blog.entity.UserEntity;
 import com.springboot.blog.exception.ResourceExistException;
 import com.springboot.blog.repository.RoleRepository;
 import com.springboot.blog.repository.UserRepository;
 import com.springboot.blog.security.JwtTokenProvider;
+import com.springboot.blog.service.service.EmailService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,18 +38,21 @@ public class AuthController {
 
     private AuthenticationManager authenticationManager;
     private JwtTokenProvider jwtTokenProvider;
+    private EmailService emailService;
 
     public AuthController(UserRepository userRepository,
                           RoleRepository roleRepository,
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
-                          JwtTokenProvider jwtTokenProvider
+                          JwtTokenProvider jwtTokenProvider,
+                          EmailService emailService
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.emailService = emailService;
     }
 
     @PostMapping("/register")
@@ -65,11 +68,14 @@ public class AuthController {
         user.setRoles(Collections.singleton(role));
         userRepository.save(user);
         signupResponseDto response = new signupResponseDto();
+        SignupMailDto mailDto = new SignupMailDto();
+        mailDto.setUsername(userDto.getUsername());
+        this.emailService.sendSignupMail(mailDto);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> loginUser(@Valid @RequestBody LoginDto loginDto){
+    public ResponseEntity<LoginResponseDto> loginUser(@Valid @RequestBody LoginDto loginDto) throws MessagingException {
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(),loginDto.getPassword())
         );
@@ -77,6 +83,9 @@ public class AuthController {
         LoginResponseDto response = new LoginResponseDto();
         String  token = jwtTokenProvider.generateToken(authentication);
         response.setToken(token);
+        sendLoginMailDto loginMailDto = new sendLoginMailDto();
+        loginMailDto.setUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        this.emailService.sendLoginMail(loginMailDto);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Account created</title>
+        <Style>
+            h1{
+                font-size:0.7rem;
+
+            }
+        </Style>
+    </head>
+    <body>
+        <h1 th:text="${'hello dear ' + name}"></h1>
+        <p>you just signed in to your account</p>
+        <p>if you did not authorize this sign in, click on the link below</p>
+    </body>
+</html>
